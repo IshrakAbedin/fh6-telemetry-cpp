@@ -1,0 +1,32 @@
+BasedOnStyle: Microsoft
+UseTab: Never
+TabWidth: 4
+IndentWidth: 4
+
+BreakBeforeBraces: Allman
+
+PointerAlignment: Left
+ReferenceAlignment: Left
+
+SpaceBeforeParens: ControlStatements
+
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortFunctionsOnASingleLine: None
+AllowShortBlocksOnASingleLine: Never
+
+ColumnLimit: 80
+
+SortIncludes: true
+IncludeBlocks: Preserve
+
+AlignAfterOpenBracket: BlockIndent
+ContinuationIndentWidth: 4
+
+BinPackParameters: true
+BinPackArguments: true
+
+IndentCaseLabels: true
+
+SpaceInEmptyBlock: false
+
+ReflowComments: false
