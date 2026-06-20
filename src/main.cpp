@@ -1,8 +1,10 @@
 #include <asio.hpp>
+#include <chrono>
 #include <cstddef>
 #include <cstdio>
 #include <fmt/base.h>
-#include <system_error>
+#include <stdexcept>
+#include <thread>
 
 #include "telemetry_packet.hpp"
 #include "telemetry_server.hpp"
@@ -10,18 +12,34 @@
 
 constexpr auto PORT = 7777;
 
-void PacketPrinter(
-    TelemetryServer::buffer_t buffer, const std::error_code& ec,
-    size_t bytes_transferred
-);
-
 int main()
 {
+    using namespace std::chrono_literals;
     try
     {
         asio::io_context io_context;
-        TelemetryServer server{io_context, PORT, PacketPrinter};
-        io_context.run();
+        TelemetryServer server{io_context, PORT};
+        auto server_thread =
+            std::jthread{[&io_context]() { io_context.run(); }};
+
+        while (true)
+        {
+            if (server.HasNewData())
+            {
+                auto data = TelemetryPacket::FromBuffer(server.GetData());
+                fmt::println(
+                    "Speed: {:6.2f}, Gear: {:02d}, RPM: {:6.2f}",
+                    ms_to_kmph(data.Speed), data.Gear, data.CurrentEngineRpm
+                );
+            }
+            else
+            {
+                fmt::println("No new data found");
+            }
+            std::this_thread::sleep_for(50ms); // Runs for ~20 times per second
+        }
+
+        io_context.stop();
     }
     catch (std::exception& e)
     {
@@ -29,17 +47,4 @@ int main()
     }
 
     return 0;
-}
-
-void PacketPrinter(
-    TelemetryServer::buffer_t buffer, const std::error_code& ec,
-    size_t bytes_transferred
-)
-{
-    auto p = TelemetryPacket::FromBuffer(buffer);
-    if (!ec)
-        fmt::println("Speed: {:4.2f} km/h, Gear: {}, Steer: {}",
-                         ms_to_kmph(p.Speed), p.Gear, p.Steer);
-    else
-        fmt::println("Error occured! <{}>", ec.message());
 }

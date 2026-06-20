@@ -5,6 +5,8 @@
 #include <functional>
 #include <memory>
 
+#include "triple_buffer.hpp"
+
 class TelemetryServer
 {
   public:
@@ -15,27 +17,32 @@ class TelemetryServer
         std::function<void(buffer_t, const std::error_code&, size_t)>;
 
   private:
-    udp::socket socket_;
-    udp::endpoint remote_endpoint_;
-    buffer_t recv_buffer_;
-    receive_callback_t recv_callback_;
+    udp::socket m_Socket;
+    udp::endpoint m_RemoteEndpoint;
+    TripleBuffer<buffer_t> m_RecvTBuffer;
 
   public:
-    TelemetryServer(
-        asio::io_context& io_context, port_type port_num,
-        receive_callback_t callback
-    )
-        : socket_{io_context, udp::endpoint{udp::v4(), port_num}},
-          recv_callback_{callback}
+    TelemetryServer(asio::io_context& io_context, port_type port_num)
+        : m_Socket{io_context, udp::endpoint{udp::v4(), port_num}}
     {
         StartReceive();
+    }
+
+    bool HasNewData()
+    {
+        return m_RecvTBuffer.CheckNew();
+    }
+
+    const buffer_t& GetData() const
+    {
+        return m_RecvTBuffer.GetReadBuffer();
     }
 
   private:
     void StartReceive()
     {
-        socket_.async_receive_from(
-            asio::buffer(recv_buffer_), remote_endpoint_,
+        m_Socket.async_receive_from(
+            asio::buffer(m_RecvTBuffer.GetWriteBuffer()), m_RemoteEndpoint,
             std::bind(
                 &TelemetryServer::HandleReceive, this,
                 asio::placeholders::error, asio::placeholders::bytes_transferred
@@ -47,14 +54,9 @@ class TelemetryServer
         const std::error_code& error, std::size_t bytes_transferred
     )
     {
-        recv_callback_(recv_buffer_, error, bytes_transferred);
+        // Forza specified packet size (324)
+        if (!error && bytes_transferred <= 324) 
+            m_RecvTBuffer.Publish();
         StartReceive();
-    }
-
-    void HandleSend(
-        std::shared_ptr<std::string> /*message*/,
-        const std::error_code& /*error*/, std::size_t /*bytes_transferred*/
-    )
-    {
     }
 };
