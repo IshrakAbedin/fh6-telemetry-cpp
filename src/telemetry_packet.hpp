@@ -5,7 +5,7 @@
 
 #include "telemetry_server.hpp"
 
-#pragma push(packed, 1)
+#pragma pack(push, 1)
 struct TelemetryPacket
 {
     using s8 = int8_t;
@@ -143,4 +143,4 @@ struct TelemetryPacket
         return p;
     }
 };
-#pragma pop(packed)
+#pragma pack(pop)
