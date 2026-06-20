@@ -1,7 +1,7 @@
 #include <asio.hpp>
 #include <cstddef>
-#include <format>
-#include <iostream>
+#include <cstdio>
+#include <fmt/base.h>
 #include <system_error>
 
 #include "telemetry_packet.hpp"
@@ -25,7 +25,7 @@ int main()
     }
     catch (std::exception& e)
     {
-        std::cerr << e.what() << std::endl;
+        fmt::println(stderr, "[Error] {}", e.what());
     }
 
     return 0;
@@ -38,11 +38,8 @@ void PacketPrinter(
 {
     auto p = TelemetryPacket::FromBuffer(buffer);
     if (!ec)
-        std::cout << std::format(
-                         "Speed: {:4.2f} km/h, Gear: {}, Steer: {}",
-                         ms_to_kmph(p.Speed), p.Gear, p.Steer
-                     )
-                  << std::endl;
+        fmt::println("Speed: {:4.2f} km/h, Gear: {}, Steer: {}",
+                         ms_to_kmph(p.Speed), p.Gear, p.Steer);
     else
-        std::cout << "Error ocurred!" << std::endl;
+        fmt::println("Error occured! <{}>", ec.message());
 }

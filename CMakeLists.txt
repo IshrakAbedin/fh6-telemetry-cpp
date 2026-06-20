@@ -7,9 +7,10 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Fetch Asio
+# Fetch dependencies
 include(FetchContent)
 
+# Fetch Asio
 FetchContent_Declare(
     asio_backend
     GIT_REPOSITORY https://github.com/chriskohlhoff/asio.git
@@ -18,7 +19,6 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(asio_backend)
 
 # Interface for Asio
-
 add_library(asio_standalone INTERFACE)
 
 # Expose headers for Asio
@@ -33,11 +33,19 @@ target_compile_definitions(asio_standalone INTERFACE ASIO_STANDALONE)
 find_package(Threads REQUIRED)
 target_link_libraries(asio_standalone INTERFACE Threads::Threads)
 
-# Socket libraru for Windows
+# Socket library for Windows
 if(WIN32)
   # Windows requires Winsock libraries for networking functionality
   target_link_libraries(asio_standalone INTERFACE ws2_32 mswsock)
 endif()
+
+# Fetch fmtlib
+FetchContent_Declare(
+  fmt
+  GIT_REPOSITORY https://github.com/fmtlib/fmt
+  GIT_TAG        12.2.0 # Last 20 June 2026
+)
+FetchContent_MakeAvailable(fmt)
 
 # Executable target
 add_executable(fh6-telemetry-server)
@@ -52,3 +60,4 @@ target_include_directories(fh6-telemetry-server PRIVATE
 )
 
 target_link_libraries(fh6-telemetry-server PRIVATE asio_standalone)
+target_link_libraries(fh6-telemetry-server PRIVATE fmt::fmt)
