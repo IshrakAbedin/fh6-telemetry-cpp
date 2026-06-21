@@ -7,8 +7,8 @@
 #include <string>
 #include <thread>
 
-#include "telemetry_packet.hpp"
-#include "telemetry_server.hpp"
+#include "server/telemetry_packet.hpp"
+#include "server/telemetry_server.hpp"
 #include "util.hpp"
 
 constexpr auto DEFAULT_PORT = 7777;

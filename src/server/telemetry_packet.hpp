@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <cstring>
 
-#include "telemetry_server.hpp"
+#include "server/telemetry_server.hpp"
 
 #pragma pack(push, 1)
 struct TelemetryPacket
