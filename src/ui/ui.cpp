@@ -556,7 +556,8 @@ int ui(TelemetryServer& server)
     ImGui_ImplVulkan_Init(&init_info);
 
     // Load Fonts
-    io.Fonts->AddFontFromFileTTF(DEFAULT_FONT);
+    auto font_path = GET_FONT_PATH();
+    io.Fonts->AddFontFromFileTTF(font_path.c_str());
 
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 

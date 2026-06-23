@@ -142,8 +142,9 @@ add_executable(fh6-telemetry-server)
 target_sources(fh6-telemetry-server
     PRIVATE
     ${CMAKE_SOURCE_DIR}/src/main.cpp
-    src/ui/ui.cpp
-    src/ui/widgets.cpp
+    ${CMAKE_SOURCE_DIR}/src/ui/ui.cpp
+    ${CMAKE_SOURCE_DIR}/src/ui/widgets.cpp
+    ${CMAKE_SOURCE_DIR}/src/exec_util.cpp
 )
 
 target_include_directories(fh6-telemetry-server PRIVATE
@@ -165,3 +166,12 @@ target_compile_definitions(fh6-telemetry-server PRIVATE
     IMGUI_IMPL_VULKAN_USE_VOLK
     VK_NO_PROTOTYPES
 )
+
+# Sync assets
+add_custom_target(sync-assets
+    COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+            "${CMAKE_CURRENT_SOURCE_DIR}/assets"
+            "${CMAKE_CURRENT_BINARY_DIR}/assets"
+    COMMENT "Checking and syncing assets..."
+)
+add_dependencies(fh6-telemetry-server sync-assets)
