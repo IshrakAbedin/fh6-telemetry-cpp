@@ -1,7 +1,4 @@
 #include <asio.hpp>
-#include <chrono>
-#include <cstddef>
-#include <cstdio>
 #include <fmt/base.h>
 #include <stdexcept>
 #include <string>
@@ -10,7 +7,6 @@
 #include "server/telemetry_packet.hpp"
 #include "server/telemetry_server.hpp"
 #include "ui/ui.hpp"
-#include "util.hpp"
 
 constexpr auto DEFAULT_PORT = 7777;
 
