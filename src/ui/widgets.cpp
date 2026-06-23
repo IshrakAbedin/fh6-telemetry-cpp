@@ -76,20 +76,24 @@ void powertrain_plot(float currentRPM, float maxRPM, float torque, float power)
 {
     ImGui::Begin("Powertrain");
 
-    // static ScrollingBuffer sdata1, sdata2;
-
     static ScrollingBuffer transmission_data, torque_data, power_data;
 
-    // Add points to the buffers every 0.02 seconds
-    static float t = 0, last_t = 0.0f;
+    // Add points to the buffers every 0.02 seconds (rate limited)
+    // static float t = 0, last_t = 0.0f;
+    // if (t == 0 || t - last_t >= 0.02f)
+    // {
+    //     transmission_data.AddPoint(t, currentRPM);
+    //     torque_data.AddPoint(t, torque);
+    //     power_data.AddPoint(t, power);
+    //     last_t = t;
+    // }
+    // t += ImGui::GetIO().DeltaTime;
 
-    if (t == 0 || t - last_t >= 0.02f)
-    {
-        transmission_data.AddPoint(t, currentRPM);
-        torque_data.AddPoint(t, torque);
-        power_data.AddPoint(t, power);
-        last_t = t;
-    }
+    // Plot without rate limiting
+    static float t = 0;
+    transmission_data.AddPoint(t, currentRPM);
+    torque_data.AddPoint(t, torque);
+    power_data.AddPoint(t, power);
     t += ImGui::GetIO().DeltaTime;
 
     static float history = 10.0f;
@@ -164,17 +168,26 @@ void input_plot(float acc, float brk, float hbk, float clt, float str)
 
     static ScrollingBuffer acc_data, brk_data, hbk_data, clt_data, str_data;
 
-    static float t = 0, last_t = 0.0f;
+    // Add points to the buffers every 0.02 seconds (rate limited)
+    // static float t = 0, last_t = 0.0f;
+    // if (t == 0 || t - last_t >= 0.02f)
+    // {
+    //     acc_data.AddPoint(t, acc);
+    //     brk_data.AddPoint(t, brk);
+    //     hbk_data.AddPoint(t, hbk);
+    //     clt_data.AddPoint(t, clt);
+    //     str_data.AddPoint(t, str);
+    //     last_t = t;
+    // }
+    // t += ImGui::GetIO().DeltaTime;
 
-    if (t == 0 || t - last_t >= 0.02f)
-    {
-        acc_data.AddPoint(t, acc);
-        brk_data.AddPoint(t, brk);
-        hbk_data.AddPoint(t, hbk);
-        clt_data.AddPoint(t, clt);
-        str_data.AddPoint(t, str);
-        last_t = t;
-    }
+    // Plot without rate limiting
+    static float t = 0;
+    acc_data.AddPoint(t, acc);
+    brk_data.AddPoint(t, brk);
+    hbk_data.AddPoint(t, hbk);
+    clt_data.AddPoint(t, clt);
+    str_data.AddPoint(t, str);
     t += ImGui::GetIO().DeltaTime;
 
     static float history = 10.0f;
