@@ -14,3 +14,9 @@ inline std::string GET_FONT_PATH()
                                 .string();
     return font_path;
 }
+
+inline std::string GET_IMGUI_INI_PATH()
+{
+    static auto ini_path = (get_executable_dir() / "imgui.ini").string();
+    return ini_path;
+}

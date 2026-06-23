@@ -500,8 +500,15 @@ int ui(TelemetryServer& server)
     ImGui::CreateContext();
     ImPlot::CreateContext();
 
+    
     ImGuiIO& io = ImGui::GetIO();
     (void)io;
+    
+    // Pin ini path
+    std::string ini_path = GET_IMGUI_INI_PATH();
+    io.IniFilename = ini_path.c_str();
+
+    // Proceed with rest of the configs
     io.ConfigFlags |=
         ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
     io.ConfigFlags |=
