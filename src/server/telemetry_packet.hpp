@@ -144,3 +144,45 @@ struct TelemetryPacket
     }
 };
 #pragma pack(pop)
+
+// Get car class name from class index
+constexpr const char* GetCarClassString(int index)
+{
+    switch (index)
+    {
+        case 0:
+            return "D";
+        case 1:
+            return "C";
+        case 2:
+            return "B";
+        case 3:
+            return "A";
+        case 4:
+            return "S1";
+        case 5:
+            return "S2";
+        case 6:
+            return "R";
+        case 7:
+            return "X";
+        default:
+            return "N/A";
+    }
+}
+
+// Get drivetrain from drivetrain index
+constexpr const char* GetDrivetrainString(int index)
+{
+    switch (index)
+    {
+        case 0:
+            return "FWD";
+        case 1:
+            return "RWD";
+        case 2:
+            return "AWD";
+        default:
+            return "N/A";
+    }
+}
