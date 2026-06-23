@@ -596,6 +596,9 @@ int ui(TelemetryServer& server)
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
+        // Dockspace initialization
+        ImGui::DockSpaceOverViewport();
+
         // ---------------- ACTUAL UI CONTENTS -----------------
         widgets(server);
 
