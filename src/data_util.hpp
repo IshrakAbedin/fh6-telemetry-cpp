@@ -18,6 +18,13 @@ constexpr auto psi_to_bar(T p)
 
 template <typename T>
     requires std::is_arithmetic_v<T>
+constexpr auto fahrenheit_to_celcius(T f)
+{
+    return (f - 32.0f) / 1.8f;
+}
+
+template <typename T>
+    requires std::is_arithmetic_v<T>
 constexpr auto accel_to_g(T a)
 {
     return a / 9.80665f;

@@ -24,6 +24,7 @@ void powertrain_plot(float currentRPM, float maxRPM, float torque, float power);
 void input_plot(float acc, float brk, float hbk, float clt, float str);
 void gg_plot(float right_g, float forward_g);
 void suspension_plot(float fl, float fr, float rl, float rr);
+void tiretemp_plot(float fl, float fr, float rl, float rr);
 
 void widgets(TelemetryServer& server)
 {
@@ -50,6 +51,10 @@ void widgets(TelemetryServer& server)
         data.NormalizedSuspensionTravelFrontRight,
         data.NormalizedSuspensionTravelRearLeft,
         data.NormalizedSuspensionTravelRearRight
+    );
+    tiretemp_plot(
+        data.TireTempFrontLeft, data.TireTempFrontRight, data.TireTempRearLeft,
+        data.TireTempRearRight
     );
 }
 
@@ -90,7 +95,7 @@ void general_info_plot(
 
     ImGui::Text("Gear : %02d", gear);
     ImGui::SameLine();
-    ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical); 
+    ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
     ImGui::SameLine();
     ImGui::Text("Boost: %4.2f bar", psi_to_bar(boost));
 
@@ -340,5 +345,41 @@ void suspension_plot(float fl, float fr, float rl, float rr)
     ImGui::SameLine();
     ImGui::ProgressBar(rr, ImVec2{progressbar_width, 0});
 
+    ImGui::End();
+}
+
+void tiretemp_plot(float fl, float fr, float rl, float rr)
+{
+    ImGui::Begin("Tire Temperatures");
+    ImGui::BeginTable("tire_temp_table", 2, ImGuiTableFlags_Borders);
+
+    ImGui::TableNextRow();
+    ImGui::TableNextColumn();
+    ImGui::Text(
+        "%6.2f\xc2\xb0"
+        "C",
+        fahrenheit_to_celcius(fl)
+    );
+    ImGui::TableNextColumn();
+    ImGui::Text(
+        "%6.2f\xc2\xb0"
+        "C",
+        fahrenheit_to_celcius(fr)
+    );
+    ImGui::TableNextRow();
+    ImGui::TableNextColumn();
+    ImGui::Text(
+        "%6.2f\xc2\xb0"
+        "C",
+        fahrenheit_to_celcius(rl)
+    );
+    ImGui::TableNextColumn();
+    ImGui::Text(
+        "%6.2f\xc2\xb0"
+        "C",
+        fahrenheit_to_celcius(rr)
+    );
+
+    ImGui::EndTable();
     ImGui::End();
 }
