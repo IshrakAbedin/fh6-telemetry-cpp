@@ -22,6 +22,7 @@ void general_info_plot(
 void powertrain_plot(float currentRPM, float maxRPM, float torque, float power);
 void input_plot(float acc, float brk, float hbk, float clt, float str);
 void gg_plot(float right_g, float forward_g);
+void suspension_plot(float fl, float fr, float rl, float rr);
 
 void widgets(TelemetryServer& server)
 {
@@ -43,6 +44,12 @@ void widgets(TelemetryServer& server)
         data.Clutch / 255.0f, clamp((-1.0f * data.Steer) / 127.0f, -1.0f, 1.0f)
     );
     gg_plot(accel_to_g(data.AccelerationX), accel_to_g(data.AccelerationZ));
+    suspension_plot(
+        data.NormalizedSuspensionTravelFrontLeft,
+        data.NormalizedSuspensionTravelFrontRight,
+        data.NormalizedSuspensionTravelRearLeft,
+        data.NormalizedSuspensionTravelRearRight
+    );
 }
 
 void general_info_plot(
@@ -284,13 +291,11 @@ void gg_plot(float right_g, float forward_g)
     right_g *= -1;
     forward_g *= -1;
 
-    static ImPlotSpec gg_spec{
-        ImPlotProp_Marker, ImPlotMarker_Square,
-        ImPlotProp_MarkerSize, 6,
-        ImPlotProp_LineColor, ForzaBlue,
-        ImPlotProp_FillColor, ForzaBlue,
-        ImPlotProp_FillAlpha, 0.25f
-    };
+    static ImPlotSpec gg_spec{ImPlotProp_Marker,     ImPlotMarker_Square,
+                              ImPlotProp_MarkerSize, 6,
+                              ImPlotProp_LineColor,  ForzaBlue,
+                              ImPlotProp_FillColor,  ForzaBlue,
+                              ImPlotProp_FillAlpha,  0.25f};
 
     ImGui::Begin("G-Forces");
     if (ImPlot::BeginPlot("##GG", ImVec2(-1, -1)))
@@ -302,5 +307,24 @@ void gg_plot(float right_g, float forward_g)
 
         ImPlot::EndPlot();
     }
+    ImGui::End();
+}
+
+void suspension_plot(float fl, float fr, float rl, float rr)
+{
+    ImGui::Begin("Suspension");
+
+    float region_width = ImGui::GetContentRegionAvail().x;
+    float item_gap_width = ImGui::GetStyle().ItemSpacing.x;
+    float progressbar_width = (region_width - item_gap_width) / 2.0f;
+
+    ImGui::ProgressBar(fl, ImVec2{progressbar_width, 0});
+    ImGui::SameLine();
+    ImGui::ProgressBar(fr, ImVec2{progressbar_width, 0});
+
+    ImGui::ProgressBar(rl, ImVec2{progressbar_width, 0});
+    ImGui::SameLine();
+    ImGui::ProgressBar(rr, ImVec2{progressbar_width, 0});
+
     ImGui::End();
 }
