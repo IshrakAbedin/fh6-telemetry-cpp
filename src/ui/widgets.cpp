@@ -208,7 +208,7 @@ void input_plot(float acc, float brk, float hbk, float clt, float str)
 
         // Steering Y axis
         ImPlot::SetupAxis(
-            ImAxis_Y2, "Steering (1 = left, -1 = right)",
+            ImAxis_Y2, "Steering (-1 = Left, +1 = Right)",
             ImPlotAxisFlags_AuxDefault
         );
         ImPlot::SetupAxisLimits(ImAxis_Y2, -1.0, 1.0);
