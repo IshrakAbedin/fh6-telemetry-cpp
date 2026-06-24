@@ -25,6 +25,7 @@ void input_plot(float acc, float brk, float hbk, float clt, float str);
 void gg_plot(float right_g, float forward_g);
 void suspension_plot(float fl, float fr, float rl, float rr);
 void tiretemp_plot(float fl, float fr, float rl, float rr);
+void tireslip_plot(float fl, float fr, float rl, float rr);
 
 void widgets(TelemetryServer& server)
 {
@@ -55,6 +56,10 @@ void widgets(TelemetryServer& server)
     tiretemp_plot(
         data.TireTempFrontLeft, data.TireTempFrontRight, data.TireTempRearLeft,
         data.TireTempRearRight
+    );
+    tireslip_plot(
+        data.TireSlipRatioFrontLeft, data.TireSlipRatioFrontRight,
+        data.TireSlipRatioRearLeft, data.TireSlipRatioRearRight
     );
 }
 
@@ -356,29 +361,49 @@ void tiretemp_plot(float fl, float fr, float rl, float rr)
     ImGui::TableNextRow();
     ImGui::TableNextColumn();
     ImGui::Text(
-        "%6.2f\xc2\xb0"
+        "%.2f\xc2\xb0"
         "C",
         fahrenheit_to_celcius(fl)
     );
     ImGui::TableNextColumn();
     ImGui::Text(
-        "%6.2f\xc2\xb0"
+        "%.2f\xc2\xb0"
         "C",
         fahrenheit_to_celcius(fr)
     );
     ImGui::TableNextRow();
     ImGui::TableNextColumn();
     ImGui::Text(
-        "%6.2f\xc2\xb0"
+        "%.2f\xc2\xb0"
         "C",
         fahrenheit_to_celcius(rl)
     );
     ImGui::TableNextColumn();
     ImGui::Text(
-        "%6.2f\xc2\xb0"
+        "%.2f\xc2\xb0"
         "C",
         fahrenheit_to_celcius(rr)
     );
+
+    ImGui::EndTable();
+    ImGui::End();
+}
+
+void tireslip_plot(float fl, float fr, float rl, float rr)
+{
+    ImGui::Begin("Tire Slip Ratios");
+    ImGui::BeginTable("tire_slip_table", 2, ImGuiTableFlags_Borders);
+
+    ImGui::TableNextRow();
+    ImGui::TableNextColumn();
+    ImGui::Text("%.3f", fl);
+    ImGui::TableNextColumn();
+    ImGui::Text("%.3f", fr);
+    ImGui::TableNextRow();
+    ImGui::TableNextColumn();
+    ImGui::Text("%.3f", rl);
+    ImGui::TableNextColumn();
+    ImGui::Text("%.3f", rr);
 
     ImGui::EndTable();
     ImGui::End();
