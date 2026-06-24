@@ -130,7 +130,7 @@ void powertrain_plot(float currentRPM, float maxRPM, float torque, float power)
     static float t = 0;
     transmission_data.AddPoint(t, currentRPM);
     torque_data.AddPoint(t, torque);
-    power_data.AddPoint(t, power);
+    power_data.AddPoint(t, power / 1000.0f); // Convert watts to kilo watts
     t += ImGui::GetIO().DeltaTime;
 
     static float history = 10.0f;
