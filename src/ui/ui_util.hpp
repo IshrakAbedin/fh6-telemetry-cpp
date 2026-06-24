@@ -9,7 +9,7 @@ struct ScrollingBuffer
     int MaxSize;
     int Offset;
     ImVector<ImVec2> Data;
-    ScrollingBuffer(int max_size = 2000)
+    ScrollingBuffer(int max_size = 4500)
     {
         MaxSize = max_size;
         Offset = 0;
@@ -40,10 +40,10 @@ struct RollingBuffer
 {
     float Span;
     ImVector<ImVec2> Data;
-    RollingBuffer()
+    RollingBuffer(int initial_reserve = 2000)
     {
         Span = 10.0f;
-        Data.reserve(2000);
+        Data.reserve(initial_reserve);
     }
     void AddPoint(float x, float y)
     {
