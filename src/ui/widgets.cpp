@@ -2,6 +2,7 @@
 
 #include <fmt/format.h>
 #include <imgui.h>
+#include <imgui_internal.h>
 #include <implot.h>
 
 #include "data_util.hpp"
@@ -64,21 +65,34 @@ void general_info_plot(
     ImGui::PushFont(
         nullptr, current_style.FontSizeBase * GENERAL_INFO_FONT_SCALE
     );
+    ImGui::Text(
+        "Class: %s - %s", GetCarClassString(car_class),
+        GetDrivetrainString(drivetrain)
+    );
+    ImGui::SameLine();
+    ImColor status_color =
+        receiving ? ImColor{0, 255, 0, 255} : ImColor{255, 0, 0, 255};
+    ImGui::ColorButton(
+        "##Status", status_color, ImGuiColorEditFlags_NoTooltip,
+        ImVec2{16.0f, 16.0f}
+    );
+    ImGui::Separator();
 
     ImGui::Text(
         "Speed: %03.0f kmph (%03.0f mph)", ms_to_kmph(speed), ms_to_mph(speed)
     );
-    ImGui::ProgressBar(clamp(ms_to_kmph(speed) / 500.0f, 0.0f, 1.0f));
-    ImGui::Text("Gear : %02d", gear);
-    ImGui::Text("Boost : %4.2f bar", psi_to_bar(boost));
-    ImGui::Text("Class: %s", GetCarClassString(car_class));
-    ImGui::Text("Drivetrain: %s", GetDrivetrainString(drivetrain));
-
-    ImColor status_color =
-        receiving ? ImColor{0, 255, 0, 255} : ImColor{255, 0, 0, 255};
-    ImGui::ColorButton(
-        "##Status", status_color, ImGuiColorEditFlags_NoTooltip, ImVec2(16, 16)
+    std::string speed_text = fmt::format("{:.1f} kmph", ms_to_kmph(speed));
+    ImGui::ProgressBar(
+        clamp(ms_to_kmph(speed) / 500.0f, 0.0f, 1.0f), ImVec2{-1.0f, 0.0f},
+        speed_text.c_str()
     );
+    ImGui::Separator();
+
+    ImGui::Text("Gear : %02d", gear);
+    ImGui::SameLine();
+    ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical); 
+    ImGui::SameLine();
+    ImGui::Text("Boost: %4.2f bar", psi_to_bar(boost));
 
     ImGui::PopFont();
 
