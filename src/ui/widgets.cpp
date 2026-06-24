@@ -21,6 +21,7 @@ void general_info_plot(
 );
 void powertrain_plot(float currentRPM, float maxRPM, float torque, float power);
 void input_plot(float acc, float brk, float hbk, float clt, float str);
+void gg_plot(float right_g, float forward_g);
 
 void widgets(TelemetryServer& server)
 {
@@ -41,6 +42,7 @@ void widgets(TelemetryServer& server)
         data.Accel / 255.0f, data.Break / 255.0f, data.HandBrake / 255.0f,
         data.Clutch / 255.0f, clamp((-1.0f * data.Steer) / 127.0f, -1.0f, 1.0f)
     );
+    gg_plot(accel_to_g(data.AccelerationX), accel_to_g(data.AccelerationZ));
 }
 
 void general_info_plot(
@@ -59,7 +61,7 @@ void general_info_plot(
     ImGui::Text(
         "Speed: %03.0f kmph (%03.0f mph)", ms_to_kmph(speed), ms_to_mph(speed)
     );
-    ImGui::ProgressBar(clamp(ms_to_kmph(speed) / 500.0, 0.0, 1.0));
+    ImGui::ProgressBar(clamp(ms_to_kmph(speed) / 500.0f, 0.0f, 1.0f));
     ImGui::Text("Gear : %02d", gear);
     ImGui::Text("Boost : %4.2f bar", psi_to_bar(boost));
     ImGui::Text("Class: %s", GetCarClassString(car_class));
@@ -270,6 +272,33 @@ void input_plot(float acc, float brk, float hbk, float clt, float str)
             "Steering", &str_data.Data[0].x, &str_data.Data[0].y,
             str_data.Data.size(), steering_spec
         );
+
+        ImPlot::EndPlot();
+    }
+    ImGui::End();
+}
+
+void gg_plot(float right_g, float forward_g)
+{
+    // Invert axes
+    right_g *= -1;
+    forward_g *= -1;
+
+    static ImPlotSpec gg_spec{
+        ImPlotProp_Marker, ImPlotMarker_Square,
+        ImPlotProp_MarkerSize, 6,
+        ImPlotProp_LineColor, ForzaBlue,
+        ImPlotProp_FillColor, ForzaBlue,
+        ImPlotProp_FillAlpha, 0.25f
+    };
+
+    ImGui::Begin("G-Forces");
+    if (ImPlot::BeginPlot("##GG", ImVec2(-1, -1)))
+    {
+        ImPlot::SetupAxes(nullptr, nullptr);
+        ImPlot::SetupAxisLimits(ImAxis_X1, -2.0, 2.0, ImGuiCond_Always);
+        ImPlot::SetupAxisLimits(ImAxis_Y1, -2.0, 2.0, ImGuiCond_Always);
+        ImPlot::PlotScatter("", &right_g, &forward_g, 1, gg_spec);
 
         ImPlot::EndPlot();
     }
