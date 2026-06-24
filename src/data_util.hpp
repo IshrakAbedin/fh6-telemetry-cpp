@@ -6,7 +6,14 @@ template <typename T>
     requires std::is_arithmetic_v<T>
 constexpr auto ms_to_kmph(T s)
 {
-    return (s * 60.0f * 60.0f) / 1000.0f;
+    return (s * 60.0 * 60.0) / 1000.0;
+}
+
+template <typename T>
+    requires std::is_arithmetic_v<T>
+constexpr auto psi_to_bar(T p)
+{
+    return p * 0.0689476;
 }
 
 template <typename T>

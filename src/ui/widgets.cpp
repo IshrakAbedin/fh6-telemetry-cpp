@@ -4,10 +4,10 @@
 #include <imgui.h>
 #include <implot.h>
 
+#include "data_util.hpp"
 #include "server/telemetry_packet.hpp"
 #include "ui/ui_config.hpp"
 #include "ui/ui_util.hpp"
-#include "data_util.hpp"
 
 static const ImColor ForzaBlue = ImColor{52, 76, 199, 255};
 static const ImColor ForzaPink = ImColor{212, 38, 151, 255};
@@ -16,7 +16,8 @@ static const ImColor ForzaGreen = ImColor{36, 128, 54, 255};
 static const ImColor ForzaViolet = ImColor{108, 47, 148, 255};
 
 void general_info_plot(
-    float speed, int gear, int car_class, int drivetrain, bool receiving
+    float speed, int gear, float boost, int car_class, int drivetrain,
+    bool receiving
 );
 void powertrain_plot(float currentRPM, float maxRPM, float torque, float power);
 void input_plot(float acc, float brk, float hbk, float clt, float str);
@@ -30,7 +31,8 @@ void widgets(TelemetryServer& server)
     has_data = server.HasNewData();
 
     general_info_plot(
-        data.Speed, data.Gear, data.CarClass, data.DrivetrainType, has_data
+        data.Speed, data.Gear, data.Boost, data.CarClass, data.DrivetrainType,
+        has_data
     );
     powertrain_plot(
         data.CurrentEngineRpm, data.EngineMaxRpm, data.Torque, data.Power
@@ -42,7 +44,8 @@ void widgets(TelemetryServer& server)
 }
 
 void general_info_plot(
-    float speed, int gear, int car_class, int drivetrain, bool receiving
+    float speed, int gear, float boost, int car_class, int drivetrain,
+    bool receiving
 )
 {
     ImGui::Begin("General Info");
@@ -56,8 +59,9 @@ void general_info_plot(
     ImGui::Text(
         "Speed: %03.0f kmph (%03.0f mph)", ms_to_kmph(speed), ms_to_mph(speed)
     );
-    ImGui::ProgressBar(clamp(ms_to_kmph(speed) / 500.0f, 0.0f, 1.0f));
+    ImGui::ProgressBar(clamp(ms_to_kmph(speed) / 500.0, 0.0, 1.0));
     ImGui::Text("Gear : %02d", gear);
+    ImGui::Text("Boost : %4.2f bar", psi_to_bar(boost));
     ImGui::Text("Class: %s", GetCarClassString(car_class));
     ImGui::Text("Drivetrain: %s", GetDrivetrainString(drivetrain));
 
