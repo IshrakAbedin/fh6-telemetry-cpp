@@ -235,14 +235,14 @@ void input_plot(float acc, float brk, float hbk, float clt, float str)
         // Default axis for all inputs except steering
         ImPlot::SetupAxes("Time (s)", "Actuation Factor");
         ImPlot::SetupAxisLimits(ImAxis_X1, t - history, t, ImGuiCond_Always);
-        ImPlot::SetupAxisLimits(ImAxis_Y1, 0, 1.0f, ImGuiCond_Always);
+        ImPlot::SetupAxisLimits(ImAxis_Y1, 0, 1.05, ImGuiCond_Always);
 
         // Steering Y axis
         ImPlot::SetupAxis(
             ImAxis_Y2, "Steering (-1 = Left, +1 = Right)",
             ImPlotAxisFlags_AuxDefault
         );
-        ImPlot::SetupAxisLimits(ImAxis_Y2, -1.0, 1.0);
+        ImPlot::SetupAxisLimits(ImAxis_Y2, -1.1, 1.1);
 
         static ImPlotSpec acc_spec;
         acc_spec.Offset = acc_data.Offset;
