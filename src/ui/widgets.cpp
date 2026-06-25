@@ -292,7 +292,7 @@ void input_plot(float acc, float brk, float hbk, float clt, float str)
         clt_spec.LineColor = ColorGreen;
         clt_spec.Stride = 2 * sizeof(float);
         ImPlot::PlotLine(
-            "Cluth", &clt_data.Data[0].x, &clt_data.Data[0].y,
+            "Clutch", &clt_data.Data[0].x, &clt_data.Data[0].y,
             clt_data.Data.size(), clt_spec
         );
 
