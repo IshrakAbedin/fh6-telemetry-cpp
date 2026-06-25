@@ -87,10 +87,14 @@ void general_info_plot(
         "Speed: %03.0f kmph (%03.0f mph)", ms_to_kmph(speed), ms_to_mph(speed)
     );
     std::string speed_text = fmt::format("{:.1f} kmph", ms_to_kmph(speed));
+
+    ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ColorPink.Value);
     ImGui::ProgressBar(
         clamp(ms_to_kmph(speed) / 500.0f, 0.0f, 1.0f), ImVec2{-1.0f, 0.0f},
         speed_text.c_str()
     );
+    ImGui::PopStyleColor();
+
     ImGui::Separator();
 
     ImGui::Text("Gear : %02d", gear);
@@ -393,19 +397,31 @@ void tiretemp_plot(float fl, float fr, float rl, float rr)
 
 void tireslip_plot(float fl, float fr, float rl, float rr)
 {
+    auto warnable_imgui_text = [](float f)
+    {
+        if (f < -1.0f || f > 1.0f)
+        {
+            ImGui::TextColored(ColorYellow, "%.3f", f);
+        }
+        else
+        {
+            ImGui::Text("%.3f", f);
+        }
+    };
+
     ImGui::Begin("Tire Slip Ratios");
     ImGui::BeginTable("tire_slip_table", 2, ImGuiTableFlags_Borders);
 
     ImGui::TableNextRow();
     ImGui::TableNextColumn();
-    ImGui::Text("%.3f", fl);
+    warnable_imgui_text(fl);
     ImGui::TableNextColumn();
-    ImGui::Text("%.3f", fr);
+    warnable_imgui_text(fr);
     ImGui::TableNextRow();
     ImGui::TableNextColumn();
-    ImGui::Text("%.3f", rl);
+    warnable_imgui_text(rl);
     ImGui::TableNextColumn();
-    ImGui::Text("%.3f", rr);
+    warnable_imgui_text(rr);
 
     ImGui::EndTable();
     ImGui::End();
