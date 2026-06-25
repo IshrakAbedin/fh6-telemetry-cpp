@@ -54,6 +54,7 @@
 // #endif
 
 #include "ui/ui_config.hpp"
+#include "ui/ui_theme.hpp"
 #include "ui/widgets.hpp"
 
 // Data
@@ -500,10 +501,9 @@ int ui(TelemetryServer& server)
     ImGui::CreateContext();
     ImPlot::CreateContext();
 
-    
     ImGuiIO& io = ImGui::GetIO();
     (void)io;
-    
+
     // Pin ini path
     std::string ini_path = GET_IMGUI_INI_PATH();
     io.IniFilename = ini_path.c_str();
@@ -521,7 +521,8 @@ int ui(TelemetryServer& server)
 
     // Setup Dear ImGui style
     // ImGui::StyleColorsDark();
-    ImGui::StyleColorsLight();
+    // ImGui::StyleColorsLight();
+    style_neon_dark();
 
     // Setup scaling
     ImGuiStyle& style = ImGui::GetStyle();

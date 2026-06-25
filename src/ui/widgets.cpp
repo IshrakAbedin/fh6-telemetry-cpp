@@ -8,13 +8,8 @@
 #include "data_util.hpp"
 #include "server/telemetry_packet.hpp"
 #include "ui/ui_config.hpp"
+#include "ui/ui_theme.hpp"
 #include "ui/ui_util.hpp"
-
-static const ImColor ColorBlue = ImColor{2, 85, 194, 255};
-static const ImColor ColorPink = ImColor{212, 38, 151, 255};
-static const ImColor ColorYellow = ImColor{247, 170, 2, 255};
-static const ImColor ColorGreen = ImColor{3, 171, 68, 255};
-static const ImColor ColorViolet = ImColor{168, 7, 222, 255};
 
 void general_info_plot(
     float speed, int gear, float boost, int car_class, int drivetrain,
