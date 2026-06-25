@@ -7,7 +7,7 @@
 template <typename T> class TripleBuffer
 {
   private:
-    std::array<T, 3> m_Buffers;
+    std::array<T, 3> m_Buffers{0};
 
     unsigned m_WriteIndex{0u};
     unsigned m_ReadIndex{1u};

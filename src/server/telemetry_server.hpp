@@ -5,7 +5,7 @@
 #include <functional>
 #include <memory>
 
-#include "triple_buffer.hpp"
+#include "server/triple_buffer.hpp"
 
 class TelemetryServer
 {
@@ -55,7 +55,7 @@ class TelemetryServer
     )
     {
         // Forza specified packet size (324)
-        if (!error && bytes_transferred <= 324) 
+        if (!error && bytes_transferred <= 324)
             m_RecvTBuffer.Publish();
         StartReceive();
     }
