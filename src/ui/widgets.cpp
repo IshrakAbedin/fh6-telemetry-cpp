@@ -300,7 +300,7 @@ void input_plot(float acc, float brk, float hbk, float clt, float str)
         ImPlot::SetAxes(ImAxis_X1, ImAxis_Y2);
 
         static ImPlotSpec steering_spec;
-        steering_spec.Offset = steering_spec.Offset;
+        steering_spec.Offset = str_data.Offset;
         steering_spec.LineWeight = 2.0f;
         steering_spec.Stride = 2 * sizeof(float);
         steering_spec.LineColor = ColorViolet;
