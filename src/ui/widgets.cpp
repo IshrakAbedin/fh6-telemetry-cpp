@@ -10,11 +10,11 @@
 #include "ui/ui_config.hpp"
 #include "ui/ui_util.hpp"
 
-static const ImColor ForzaBlue = ImColor{52, 76, 199, 255};
-static const ImColor ForzaPink = ImColor{212, 38, 151, 255};
-static const ImColor ForzaYellow = ImColor{245, 226, 59, 255};
-static const ImColor ForzaGreen = ImColor{36, 128, 54, 255};
-static const ImColor ForzaViolet = ImColor{108, 47, 148, 255};
+static const ImColor ColorBlue = ImColor{2, 85, 194, 255};
+static const ImColor ColorPink = ImColor{212, 38, 151, 255};
+static const ImColor ColorYellow = ImColor{247, 170, 2, 255};
+static const ImColor ColorGreen = ImColor{3, 171, 68, 255};
+static const ImColor ColorViolet = ImColor{168, 7, 222, 255};
 
 void general_info_plot(
     float speed, int gear, float boost, int car_class, int drivetrain,
@@ -113,13 +113,13 @@ void powertrain_plot(float currentRPM, float maxRPM, float torque, float power)
 {
     ImGui::Begin("Powertrain");
 
-    static ScrollingBuffer transmission_data, torque_data, power_data;
+    static ScrollingBuffer rpm_data, torque_data, power_data;
 
     // Add points to the buffers every 0.02 seconds (rate limited)
     // static float t = 0, last_t = 0.0f;
     // if (t == 0 || t - last_t >= 0.02f)
     // {
-    //     transmission_data.AddPoint(t, currentRPM);
+    //     rpm_data.AddPoint(t, currentRPM);
     //     torque_data.AddPoint(t, torque);
     //     power_data.AddPoint(t, power);
     //     last_t = t;
@@ -128,7 +128,7 @@ void powertrain_plot(float currentRPM, float maxRPM, float torque, float power)
 
     // Plot without rate limiting
     static float t = 0;
-    transmission_data.AddPoint(t, currentRPM);
+    rpm_data.AddPoint(t, currentRPM);
     torque_data.AddPoint(t, torque);
     power_data.AddPoint(t, power / 1000.0f); // Convert watts to kilo watts
     t += ImGui::GetIO().DeltaTime;
@@ -155,21 +155,20 @@ void powertrain_plot(float currentRPM, float maxRPM, float torque, float power)
         ImPlot::SetupAxisLimits(ImAxis_Y2, 0.0, 1400.0);
 
         // Plot Rev data in the default axis
-        static ImPlotSpec transmission_spec;
-        transmission_spec.Offset = transmission_data.Offset;
-        transmission_spec.Stride = 2 * sizeof(float);
-        transmission_spec.LineColor = ForzaBlue;
-        transmission_spec.FillColor = transmission_spec.LineColor;
-        transmission_spec.FillAlpha = 0.5f;
+        static ImPlotSpec rpm_spec;
+        rpm_spec.Offset = rpm_data.Offset;
+        rpm_spec.Stride = 2 * sizeof(float);
+        rpm_spec.LineWeight = 2.0f;
+        rpm_spec.LineColor = ColorBlue;
+        rpm_spec.FillColor = rpm_spec.LineColor;
+        rpm_spec.FillAlpha = 0.35f;
         ImPlot::PlotShaded(
-            "Transmission", &transmission_data.Data[0].x,
-            &transmission_data.Data[0].y, transmission_data.Data.size(),
-            -INFINITY, transmission_spec
+            "Engine RPM", &rpm_data.Data[0].x, &rpm_data.Data[0].y,
+            rpm_data.Data.size(), -INFINITY, rpm_spec
         );
         ImPlot::PlotLine(
-            "Transmission", &transmission_data.Data[0].x,
-            &transmission_data.Data[0].y, transmission_data.Data.size(),
-            transmission_spec
+            "Engine RPM", &rpm_data.Data[0].x, &rpm_data.Data[0].y,
+            rpm_data.Data.size(), rpm_spec
         );
 
         // Switch to the secondary axis and plot torque and power
@@ -178,7 +177,8 @@ void powertrain_plot(float currentRPM, float maxRPM, float torque, float power)
         static ImPlotSpec torque_spec;
         torque_spec.Offset = torque_data.Offset;
         torque_spec.Stride = 2 * sizeof(float);
-        torque_spec.LineColor = ForzaPink;
+        torque_spec.LineWeight = 2.0f;
+        torque_spec.LineColor = ColorPink;
         ImPlot::PlotLine(
             "Torque", &torque_data.Data[0].x, &torque_data.Data[0].y,
             torque_data.Data.size(), torque_spec
@@ -187,7 +187,8 @@ void powertrain_plot(float currentRPM, float maxRPM, float torque, float power)
         static ImPlotSpec power_spec;
         power_spec.Offset = power_data.Offset;
         power_spec.Stride = 2 * sizeof(float);
-        power_spec.LineColor = ForzaYellow;
+        power_spec.LineWeight = 2.0f;
+        power_spec.LineColor = ColorYellow;
         ImPlot::PlotLine(
             "Power", &power_data.Data[0].x, &power_data.Data[0].y,
             power_data.Data.size(), power_spec
@@ -247,9 +248,10 @@ void input_plot(float acc, float brk, float hbk, float clt, float str)
         static ImPlotSpec acc_spec;
         acc_spec.Offset = acc_data.Offset;
         acc_spec.Stride = 2 * sizeof(float);
-        acc_spec.LineColor = ForzaBlue;
+        acc_spec.LineWeight = 2.0f;
+        acc_spec.LineColor = ColorBlue;
         acc_spec.FillColor = acc_spec.LineColor;
-        acc_spec.FillAlpha = 0.4f;
+        acc_spec.FillAlpha = 0.35f;
         ImPlot::PlotShaded(
             "Accelerator", &acc_data.Data[0].x, &acc_data.Data[0].y,
             acc_data.Data.size(), -INFINITY, acc_spec
@@ -262,7 +264,8 @@ void input_plot(float acc, float brk, float hbk, float clt, float str)
         static ImPlotSpec brk_spec;
         brk_spec.Offset = brk_data.Offset;
         brk_spec.Stride = 2 * sizeof(float);
-        brk_spec.LineColor = ForzaPink;
+        brk_spec.LineWeight = 2.0f;
+        brk_spec.LineColor = ColorPink;
         brk_spec.FillColor = brk_spec.LineColor;
         brk_spec.FillAlpha = 0.4f;
         ImPlot::PlotShaded(
@@ -276,7 +279,8 @@ void input_plot(float acc, float brk, float hbk, float clt, float str)
 
         static ImPlotSpec hbk_spec;
         hbk_spec.Offset = hbk_data.Offset;
-        hbk_spec.LineColor = ForzaYellow;
+        hbk_spec.LineWeight = 2.0f;
+        hbk_spec.LineColor = ColorYellow;
         hbk_spec.Stride = 2 * sizeof(float);
         ImPlot::PlotLine(
             "Hand-brake", &hbk_data.Data[0].x, &hbk_data.Data[0].y,
@@ -285,7 +289,8 @@ void input_plot(float acc, float brk, float hbk, float clt, float str)
 
         static ImPlotSpec clt_spec;
         clt_spec.Offset = clt_data.Offset;
-        clt_spec.LineColor = ForzaViolet;
+        clt_spec.LineWeight = 2.0f;
+        clt_spec.LineColor = ColorGreen;
         clt_spec.Stride = 2 * sizeof(float);
         ImPlot::PlotLine(
             "Cluth", &clt_data.Data[0].x, &clt_data.Data[0].y,
@@ -297,8 +302,9 @@ void input_plot(float acc, float brk, float hbk, float clt, float str)
 
         static ImPlotSpec steering_spec;
         steering_spec.Offset = steering_spec.Offset;
+        steering_spec.LineWeight = 2.0f;
         steering_spec.Stride = 2 * sizeof(float);
-        steering_spec.LineColor = ForzaGreen;
+        steering_spec.LineColor = ColorViolet;
         ImPlot::PlotLine(
             "Steering", &str_data.Data[0].x, &str_data.Data[0].y,
             str_data.Data.size(), steering_spec
@@ -316,17 +322,18 @@ void gg_plot(float right_g, float forward_g)
     forward_g *= -1;
 
     static ImPlotSpec gg_spec{ImPlotProp_Marker,     ImPlotMarker_Square,
-                              ImPlotProp_MarkerSize, 6,
-                              ImPlotProp_LineColor,  ForzaBlue,
-                              ImPlotProp_FillColor,  ForzaBlue,
+                              ImPlotProp_MarkerSize, 12,
+                              ImPlotProp_LineWeight, 2.0f,
+                              ImPlotProp_LineColor,  ColorViolet,
+                              ImPlotProp_FillColor,  ColorViolet,
                               ImPlotProp_FillAlpha,  0.25f};
 
     ImGui::Begin("G-Forces");
     if (ImPlot::BeginPlot("##GG", ImVec2(-1, -1)))
     {
         ImPlot::SetupAxes(nullptr, nullptr);
-        ImPlot::SetupAxisLimits(ImAxis_X1, -2.0, 2.0, ImGuiCond_Always);
-        ImPlot::SetupAxisLimits(ImAxis_Y1, -2.0, 2.0, ImGuiCond_Always);
+        ImPlot::SetupAxisLimits(ImAxis_X1, -3.0, 3.0, ImGuiCond_Always);
+        ImPlot::SetupAxisLimits(ImAxis_Y1, -3.0, 3.0, ImGuiCond_Always);
         ImPlot::PlotScatter("", &right_g, &forward_g, 1, gg_spec);
 
         ImPlot::EndPlot();
