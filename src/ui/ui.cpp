@@ -484,6 +484,12 @@ static void SetWindowIcon(GLFWwindow* window)
         {
             glfwSetWindowIcon(window, icon_count, icons);
         }
+        else
+        {
+            fmt::println(
+                stderr, "[Warning] Failed to load one or more window icon(s)!"
+            );
+        }
 
         for (size_t i = 0; i < icon_count; i++)
         {
