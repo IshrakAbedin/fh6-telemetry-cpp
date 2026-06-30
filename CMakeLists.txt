@@ -136,6 +136,9 @@ add_library(implot STATIC
 target_include_directories(implot PUBLIC ${implot_SOURCE_DIR})
 target_link_libraries(implot PUBLIC imgui)
 
+# Add stb_image using subdirectory
+add_subdirectory(${CMAKE_SOURCE_DIR}/vendor/stb)
+
 # Executable target
 add_executable(fh6-telemetry-server)
 
@@ -157,6 +160,7 @@ target_link_libraries(fh6-telemetry-server PRIVATE
     glfw
     imgui
     implot
+    stb_image
     volk
     Vulkan::Headers
 )

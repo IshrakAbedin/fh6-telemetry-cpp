@@ -38,6 +38,9 @@
 #include <volk.h>
 #endif
 
+// stb_image for icon loading
+#include <stb_image.h>
+
 // [Win32] Our example includes a copy of glfw3.lib pre-compiled with VS2010 to maximize ease of testing and compatibility with old VS compilers.
 // To link with VS2010-era libraries, VS2015+ requires linking with legacy_stdio_definitions.lib, which we do using this pragma.
 // Your own project should not be affected, as you are likely to link with a newer binary of GLFW that is adequate for your version of Visual Studio.
@@ -453,6 +456,42 @@ static void FramePresent(ImGui_ImplVulkanH_Window* wd)
         wd->SemaphoreCount; // Now we can use the next set of semaphores
 }
 
+static void SetWindowIcon(GLFWwindow* window)
+{
+    // Wayland does not allow application to handle its own icons
+    if (glfwGetPlatform() != GLFW_PLATFORM_WAYLAND)
+    {
+        auto icon_paths = GET_ICON_PATHS();
+        constexpr auto icon_count = icon_paths.size();
+        GLFWimage icons[icon_count];
+
+        bool load_success = true;
+
+        for (size_t i = 0; i < icon_count; i++)
+        {
+            icons[i].pixels = stbi_load(
+                icon_paths[i].c_str(), &(icons[i].width), &(icons[i].height),
+                nullptr, 4
+            );
+            if (!icons[i].pixels)
+            {
+                load_success = false;
+                break;
+            }
+        }
+
+        if (load_success)
+        {
+            glfwSetWindowIcon(window, icon_count, icons);
+        }
+
+        for (size_t i = 0; i < icon_count; i++)
+        {
+            stbi_image_free(icons[i].pixels);
+        }
+    }
+}
+
 // Main code
 int ui(TelemetryServer& server)
 {
@@ -474,6 +513,8 @@ int ui(TelemetryServer& server)
         fmt::println("GLFW: Vulkan Not Supported");
         return 1;
     }
+
+    SetWindowIcon(window);
 
     ImVector<const char*> extensions;
     uint32_t extensions_count = 0;
