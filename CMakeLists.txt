@@ -136,6 +136,15 @@ add_library(implot STATIC
 target_include_directories(implot PUBLIC ${implot_SOURCE_DIR})
 target_link_libraries(implot PUBLIC imgui)
 
+# Fetch toml++
+FetchContent_Declare(
+    tomlplusplus
+    GIT_REPOSITORY https://github.com/marzer/tomlplusplus.git
+    GIT_TAG v3.4.0
+    GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(tomlplusplus)
+
 # Add stb_image using subdirectory
 add_subdirectory(${CMAKE_SOURCE_DIR}/vendor/stb)
 
@@ -161,6 +170,7 @@ target_link_libraries(fh6-telemetry-server PRIVATE
     imgui
     implot
     stb_image
+    tomlplusplus::tomlplusplus
     volk
     Vulkan::Headers
 )

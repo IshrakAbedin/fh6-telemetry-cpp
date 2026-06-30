@@ -1,40 +1,35 @@
 #include <asio.hpp>
 #include <fmt/base.h>
+#include <fmt/os.h>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <thread>
+#include <toml++/toml.hpp>
 
+#include "exec_util.hpp"
 #include "server/telemetry_packet.hpp"
 #include "server/telemetry_server.hpp"
 #include "ui/ui.hpp"
 
 constexpr auto DEFAULT_PORT = 7777;
+constexpr const char* DEFAULT_CONFIG_CONTENT_TEMPLATE = R"([server]
+port = {}
+)";
+static const auto CONFIG_PATH = (get_executable_dir() / "config.toml").string();
 
-// Return parsed port number between 0 to 65535 if valid,
-// -1 if out of range and -2 if argument is not an int
-int get_port_number(int argc, char* argv[]);
+// Read port number from a config file that must be between 0 to
+// 65535 and keyed as [server]->[port]-><value>. If the operation
+// failes, default port value is returned and a default config file
+// is created.
+int handle_port_number_from_config(const std::string_view file_path);
 
-int main(int argc, char* argv[])
+int main()
 {
-    int port_num = get_port_number(argc, argv);
-
-    if (port_num == -1)
-    {
-        fmt::println(stderr, "[Error] Port number must be between 0 to 65535");
-        return 1;
-    }
-    else if (port_num == -2)
-    {
-        fmt::println(
-            stderr, "[Error] Provide a valid port number between 0 to 65535 as "
-                    "the first argument"
-        );
-        return 2;
-    }
-
     try
     {
-        TelemetryServer::port_type PORT = port_num;
+        TelemetryServer::port_type PORT =
+            handle_port_number_from_config(CONFIG_PATH);
 
         fmt::println("Starting server in port: {} ...", PORT);
 
@@ -55,27 +50,37 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-int get_port_number(int argc, char* argv[])
+int handle_port_number_from_config(const std::string_view file_path)
 {
-    int port_num;
-    if (argc < 2)
+    try
     {
-        port_num = DEFAULT_PORT;
-    }
-    else
-    {
-        try
+        auto tbl = toml::parse_file(file_path);
+        if (auto port_val = tbl["server"]["port"].value<int>())
         {
-            port_num = std::stoi(argv[1]);
+            int port_num = port_val.value();
             if (port_num < 0 || port_num > 65535)
             {
-                return -1;
+                throw std::out_of_range(
+                    "Port number must be between 0 to 65535"
+                );
             }
+            return port_num;
         }
-        catch (const std::exception& e)
+        else
         {
-            return -2;
+            throw std::runtime_error("Properly keyed port value is not found");
         }
     }
-    return port_num;
+    catch (const std::exception& e) // rewrite
+    {
+        fmt::println(
+            "[Warning] Failed to handle config file: \n\t{}", e.what()
+        );
+        fmt::println("(Re)writing a default config file ...");
+
+        auto config_file = fmt::output_file(CONFIG_PATH.c_str());
+        config_file.print(DEFAULT_CONFIG_CONTENT_TEMPLATE, DEFAULT_PORT);
+    }
+
+    return DEFAULT_PORT;
 }
