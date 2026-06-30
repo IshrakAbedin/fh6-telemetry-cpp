@@ -179,3 +179,12 @@ add_custom_target(sync-assets
     COMMENT "Checking and syncing assets..."
 )
 add_dependencies(fh6-telemetry-server sync-assets)
+
+# Windows specific: desktop icon and GUI app
+if(WIN32)
+    target_sources(fh6-telemetry-server PRIVATE
+        "${CMAKE_SOURCE_DIR}/platform/windows/app.rc"
+    )
+endif()
+
+# Linux .desktop file and icon are provided in the platform/linux folder

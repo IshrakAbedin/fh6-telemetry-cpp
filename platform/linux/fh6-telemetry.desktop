@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=FH6 Telemetry
+GenericName=Racing Telemetry Viewer
+Comment=Real-time telemetry dashboard for Forza Horizon 6
+Exec=/opt/fh6-telemetry/fh6-telemetry-server
+Icon=/opt/fh6-telemetry/app_icon.svg
+Categories=Utility;Game;
+Keywords=telemetry;racing;forza;horizon;dashboard;
