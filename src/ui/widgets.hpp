@@ -2,4 +2,4 @@
 
 #include "server/telemetry_server.hpp"
 
-void widgets(TelemetryServer& server);
+void widgets(TelemetryServer& server, int port_num);

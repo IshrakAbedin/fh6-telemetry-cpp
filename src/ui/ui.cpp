@@ -499,7 +499,7 @@ static void SetWindowIcon(GLFWwindow* window)
 }
 
 // Main code
-int ui(TelemetryServer& server)
+int ui(TelemetryServer& server, int port_num)
 {
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
@@ -656,7 +656,7 @@ int ui(TelemetryServer& server)
         ImGui::DockSpaceOverViewport();
 
         // ---------------- ACTUAL UI CONTENTS -----------------
-        widgets(server);
+        widgets(server, port_num);
 
         // Rendering
         ImGui::Render();

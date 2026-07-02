@@ -11,9 +11,9 @@
 #include "ui/ui_theme.hpp"
 #include "ui/ui_util.hpp"
 
+void server_status(int port_num, bool receiving);
 void general_info_plot(
-    float speed, int gear, float boost, int car_class, int drivetrain,
-    bool receiving
+    float speed, int gear, float boost, int car_class, int drivetrain
 );
 void powertrain_plot(float currentRPM, float maxRPM, float torque, float power);
 void input_plot(float acc, float brk, float hbk, float clt, float str);
@@ -22,17 +22,15 @@ void suspension_plot(float fl, float fr, float rl, float rr);
 void tiretemp_plot(float fl, float fr, float rl, float rr);
 void tireslip_plot(float fl, float fr, float rl, float rr);
 
-void widgets(TelemetryServer& server)
+void widgets(TelemetryServer& server, int port_num)
 {
 
     auto data = TelemetryPacket::FromBuffer(server.GetData());
-    bool has_data = true;
+    bool has_data = server.HasNewData();
 
-    has_data = server.HasNewData();
-
+    server_status(port_num, has_data);
     general_info_plot(
-        data.Speed, data.Gear, data.Boost, data.CarClass, data.DrivetrainType,
-        has_data
+        data.Speed, data.Gear, data.Boost, data.CarClass, data.DrivetrainType
     );
     powertrain_plot(
         data.CurrentEngineRpm, data.EngineMaxRpm, data.Torque, data.Power
@@ -58,9 +56,29 @@ void widgets(TelemetryServer& server)
     );
 }
 
+void server_status(int port_num, bool receiving)
+{
+    static const std::string port_str = fmt::format("Port: {}", port_num);
+    ImColor status_color =
+        receiving ? ImColor{0, 255, 0, 255} : ImColor{255, 0, 0, 255};
+    float fps = ImGui::GetIO().Framerate;
+
+    ImGui::Begin("Server");
+
+    ImGui::Text(port_str.c_str());
+    ImGui::Text("Receiving");
+    ImGui::SameLine();
+    ImGui::ColorButton(
+        "##Status", status_color, ImGuiColorEditFlags_NoTooltip,
+        ImVec2{20.0f, 20.0f}
+    );
+    ImGui::Text("Rate: %.2f/s", fps);
+
+    ImGui::End();
+}
+
 void general_info_plot(
-    float speed, int gear, float boost, int car_class, int drivetrain,
-    bool receiving
+    float speed, int gear, float boost, int car_class, int drivetrain
 )
 {
     ImGui::Begin("General Info");
@@ -73,13 +91,6 @@ void general_info_plot(
     ImGui::Text(
         "Class: %s - %s", GetCarClassString(car_class),
         GetDrivetrainString(drivetrain)
-    );
-    ImGui::SameLine();
-    ImColor status_color =
-        receiving ? ImColor{0, 255, 0, 255} : ImColor{255, 0, 0, 255};
-    ImGui::ColorButton(
-        "##Status", status_color, ImGuiColorEditFlags_NoTooltip,
-        ImVec2{16.0f, 16.0f}
     );
     ImGui::Separator();
 

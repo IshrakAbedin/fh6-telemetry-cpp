@@ -28,8 +28,8 @@ int main()
 {
     try
     {
-        TelemetryServer::port_type PORT =
-            handle_port_number_from_config(CONFIG_PATH);
+        int port_num = handle_port_number_from_config(CONFIG_PATH);
+        TelemetryServer::port_type PORT = port_num;
 
         fmt::println("Starting server in port: {} ...", PORT);
 
@@ -38,7 +38,7 @@ int main()
         auto server_thread =
             std::jthread{[&io_context]() { io_context.run(); }};
 
-        ui(server);
+        ui(server, port_num);
 
         io_context.stop();
     }
