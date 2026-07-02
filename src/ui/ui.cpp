@@ -498,6 +498,53 @@ static void SetWindowIcon(GLFWwindow* window)
     }
 }
 
+static void ToggleFullscreen(GLFWwindow* window)
+{
+    static struct WindowState
+    {
+        bool IsFullscreen{false};
+        int WindowedX{100};
+        int WindowedY{100};
+        int WindowedWidth{WINDOW_WIDTH};
+        int WindowedHeight{WINDOW_HEIGHT};
+    } window_state;
+
+    GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+    const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+    if (!window_state.IsFullscreen) // switch to fullscreen
+    {
+        glfwGetWindowPos(
+            window, &window_state.WindowedX, &window_state.WindowedY
+        );
+        glfwGetWindowSize(
+            window, &window_state.WindowedWidth, &window_state.WindowedHeight
+        );
+        glfwSetWindowMonitor(
+            window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate
+        );
+        window_state.IsFullscreen = true;
+    }
+    else // switch to windowed mode with restored position and size
+    {
+        glfwSetWindowMonitor(
+            window, nullptr, window_state.WindowedX, window_state.WindowedY,
+            window_state.WindowedWidth, window_state.WindowedHeight, 0
+        );
+        window_state.IsFullscreen = false;
+    }
+}
+
+static void KeyCallback(
+    GLFWwindow* window, int key, int scancode, int action, int mods
+)
+{
+    if (key == GLFW_KEY_F11 && action == GLFW_PRESS)
+    {
+        ToggleFullscreen(window);
+    }
+}
+
 // Main code
 int ui(TelemetryServer& server, int port_num)
 {
@@ -541,6 +588,9 @@ int ui(TelemetryServer& server, int port_num)
     glfwGetFramebufferSize(window, &w, &h);
     ImGui_ImplVulkanH_Window* wd = &g_MainWindowData;
     SetupVulkanWindow(wd, surface, w, h);
+
+    // Set key callback
+    glfwSetKeyCallback(window, KeyCallback);
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
